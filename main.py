@@ -1,15 +1,17 @@
 import sqlite3
 import sys
 
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidget, QTableWidgetItem, QPlainTextEdit
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidget, QTableWidgetItem
+
+from addEditCoffeeForm import Ui_addEditCoffeeForm
+from main_ui import Ui_MainWindow
 
 
-class Coffee(QMainWindow):
+class Coffee(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.form = None
-        uic.loadUi("main.ui", self)
+        self.setupUi(self)
         self.show_info()
 
         self.addSortButton.clicked.connect(self.addSort)
@@ -30,7 +32,7 @@ class Coffee(QMainWindow):
     def show_info(self):
         self.tableWidget: QTableWidget
 
-        cur = sqlite3.connect("coffee.sqlite").cursor()
+        cur = sqlite3.connect("data/coffee.sqlite").cursor()
         response = cur.execute("SELECT * FROM sorts").fetchall()
         if not response:
             return
@@ -42,10 +44,10 @@ class Coffee(QMainWindow):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(elem)))
 
 
-class AddSort(QMainWindow):
+class AddSort(QMainWindow, Ui_addEditCoffeeForm):
     def __init__(self, info=None):
         super(AddSort, self).__init__()
-        uic.loadUi("addEditCoffeeForm.ui", self)
+        self.setupUi(self)
 
         self.info = info
         self.saveButton.clicked.connect(self.save)
@@ -62,7 +64,7 @@ class AddSort(QMainWindow):
             self.fields[3].setPlainText(info[4])
 
     def save(self):
-        con = sqlite3.connect("coffee.sqlite")
+        con = sqlite3.connect("data/coffee.sqlite")
         cur = con.cursor()
         try:
             if self.info:
